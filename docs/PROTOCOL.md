@@ -66,8 +66,14 @@ Method names (`m`) are the `ProtocolMethod` enum names verbatim — greppable in
 
 ## Implementation chunks (each independently testable)
 
-1. **View JSON codec** — walk a live `GameView` tree → JSON snapshot; unit-testable headless
-   by starting a game and serializing turn 1. Then `DeltaPacket` → JSON.
+1. **View JSON codec** — ✅ snapshot half DONE 2026-07-14 (`forge.headless.protocol.JsonViewCodec`,
+   harness `forge.headless.SnapshotDump`). Real finished game: 175 objects (80 cards / 91 card
+   states / 2 players / combat / game) in 15 ms, 77 KB compact. Values dispatch on runtime type
+   (10 branches cover all 22 TrackableTypes); refs are `{"$ref": "type:id"}`; card states keyed
+   `cardState:id:stateOrdinal` mirroring DeltaPacket. Remaining: `DeltaPacket` → JSON.
+   **⚠️ Open question for chunk 3+: per-seat hidden-info filtering.** The snapshot contains
+   full library order and both hands. Harmless for loopback solo play; MUST be resolved before
+   any remote seat exists. Investigate how stock net play filters visibility before designing.
 2. **Envelope + reply pool** — port `ReplyPool` semantics onto WebSocket frames.
 3. **`CardinalWsServer`** — Netty WS endpoint hosting a match the way `forge.headless.Main`
    does, with one human seat whose `IGuiGame`/`PlayerControllerHuman` traffic goes over the

@@ -21,8 +21,6 @@ import forge.game.GameRules;
 import forge.game.GameType;
 import forge.game.Match;
 import forge.game.player.RegisteredPlayer;
-import forge.gui.GuiBase;
-import forge.model.FModel;
 import forge.player.GamePlayerUtil;
 
 /**
@@ -46,12 +44,7 @@ public final class Main {
             System.exit(2);
         }
 
-        // Must run before any engine class loads: ForgeConstants reads the
-        // assets dir from this interface in a static initializer.
-        final String assetsDir = System.getProperty("forge.assets.dir", "." + File.separator);
-        GuiBase.setInterface(new HeadlessGuiBase(assetsDir));
-
-        FModel.initialize(null, null);
+        HeadlessBootstrap.boot();
 
         final List<RegisteredPlayer> players = new ArrayList<>();
         for (int i = 0; i < 2; i++) {
