@@ -218,7 +218,9 @@ System.out.println(new Foo(1, "x"));
 - ✅ Minimal asset set verified empirically — see §5. ~36 MB for constructed play.
 - ✅ `cardinal` pushed to Jack's fork: https://github.com/JV2246-svg/forgecopynew (remote name `fork`; `origin` stays pointed at upstream Card-Forge/forge for pulling updates). Git Credential Manager token cached — pushes are non-interactive now.
 
-**PHASE 1 COMPLETE (2026-07-14).** Next: Phase 2 — JSON game protocol over the `IGuiGame`/`PlayerControllerHuman` seam.
+**PHASE 1 COMPLETE (2026-07-14).**
+
+**Phase 2 started 2026-07-14 — recon done, design written: see `docs/PROTOCOL.md` (authoritative for protocol work).** Headline: Forge's LAN play already enumerates the entire seam as the 63-method `ProtocolMethod` enum with reply-pool blocking calls and delta state sync over a `TrackableObject` view tree. Phase 2 = give that existing protocol a JSON/WebSocket transport (Netty WS + Gson in forge-headless), NOT design a protocol from scratch. Original 3–5 wk estimate likely shrinks. Engine-side code stays Java; Kotlin begins in the Compose client repo (revises §2 note). Next action: implementation chunk 1 — GameView→JSON snapshot codec.
 
 **Learned along the way:**
 - `IGuiBase` is only 33 methods; a ready headless stub existed in `forge-gui/tools/java/ForgeMatrixWriter.java`.
