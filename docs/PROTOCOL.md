@@ -89,9 +89,20 @@ Method names (`m`) are the `ProtocolMethod` enum names verbatim — greppable in
    Deviation from the envelope spec: no separate "gameView" message — bootstrap rides in the
    first delta's "new" table (revisit when per-seat perspective filtering exists).
    Remaining for this chunk (now folded into 4-5): the human seat / IGuiGame bridge.
-4. **Scripted test client** — a dumb JSON client that mulligans to keep, passes priority
-   forever, and loses on schedule. When that game completes over the socket, Phase 2's core
-   is proven. (Same trick as Phase 1's AI-vs-AI proof: cheapest possible full-loop test.)
+4. **Scripted test client** — ✅ DONE 2026-07-14. **Phase 2's core is proven**: `ScriptedClient`
+   occupied a real human seat (`--play` mode) and played a complete legal game over the
+   socket — 1,037 frames, 112 button prompts, 5 blocking calls answered, 5 mandatory
+   discards selected by card id, clean `finishGame` exit. Server side: `JsonGuiGame`
+   (the JSON twin of RemoteClientGuiGame, wired through stock `HostedMatch`), `PlaySeatHandler`.
+   Null replies select sane defaults server-side, so a client only needs buttons + selectCard
+   to be game-legal.
+   Landmines found and fixed, for the record:
+   - `HeadlessGuiBase.isGuiThread()` must return **false**: blocking inputs assert they are
+     NOT on the EDT; headless has no EDT and everything runs inline.
+   - `finishGame` is the reliable end-of-game signal to clients; `afterGameEnd` belongs to
+     the next-game/rematch flow.
+   - Mandatory selections (discard to hand size) arrive as `setSelectables` + both buttons
+     disabled; clients must answer with a `selectCard` input.
 5. **Interactive surface** — implement the remaining blocking questions one at a time,
    driving coverage from real games (log any ProtocolMethod hit that is still unimplemented).
 

@@ -34,10 +34,20 @@ public final class CardinalWsServer {
 
     public static void main(final String[] args) throws InterruptedException {
         if (args.length < 2) {
-            System.out.println("Usage: CardinalWsServer <deck1.dck> <deck2.dck> [port]");
+            System.out.println("Usage: CardinalWsServer <deck1.dck> <deck2.dck> [port] [--play]");
+            System.out.println("  --play: connected client takes the deck1 seat vs an AI (default: spectate AI vs AI)");
             System.exit(2);
         }
-        final int port = args.length > 2 ? Integer.parseInt(args[2]) : DEFAULT_PORT;
+        boolean play = false;
+        int port = DEFAULT_PORT;
+        for (int i = 2; i < args.length; i++) {
+            if ("--play".equals(args[i])) {
+                play = true;
+            } else {
+                port = Integer.parseInt(args[i]);
+            }
+        }
+        final boolean playMode = play;
 
         HeadlessBootstrap.boot();
 
@@ -54,7 +64,9 @@ public final class CardinalWsServer {
                                     .addLast(new HttpServerCodec())
                                     .addLast(new HttpObjectAggregator(65536))
                                     .addLast(new WebSocketServerProtocolHandler(PATH, null, true))
-                                    .addLast(new GameStreamHandler(args[0], args[1]));
+                                    .addLast(playMode
+                                            ? new PlaySeatHandler(args[0], args[1])
+                                            : new GameStreamHandler(args[0], args[1]));
                         }
                     });
             final Channel server = bootstrap.bind(port).sync().channel();

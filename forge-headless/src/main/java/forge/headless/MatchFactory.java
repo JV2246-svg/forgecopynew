@@ -19,6 +19,18 @@ public final class MatchFactory {
     }
 
     /**
+     * Loads a .dck file into a RegisteredPlayer (no LobbyPlayer attached yet).
+     * @throws IllegalArgumentException if the deck fails to load
+     */
+    public static RegisteredPlayer registeredPlayerFromDeckFile(final String deckPath) {
+        final Deck deck = DeckSerializer.fromFile(new File(deckPath));
+        if (deck == null) {
+            throw new IllegalArgumentException("Could not load deck: " + deckPath);
+        }
+        return new RegisteredPlayer(deck);
+    }
+
+    /**
      * Builds a constructed match between two AI players from .dck file paths.
      * @throws IllegalArgumentException if a deck fails to load
      */
@@ -26,12 +38,8 @@ public final class MatchFactory {
         final String[] paths = {deckPath1, deckPath2};
         final List<RegisteredPlayer> players = new ArrayList<>();
         for (int i = 0; i < 2; i++) {
-            final Deck deck = DeckSerializer.fromFile(new File(paths[i]));
-            if (deck == null) {
-                throw new IllegalArgumentException("Could not load deck: " + paths[i]);
-            }
-            final RegisteredPlayer rp = new RegisteredPlayer(deck);
-            rp.setPlayer(GamePlayerUtil.createAiPlayer("Ai(" + (i + 1) + ")-" + deck.getName(), i));
+            final RegisteredPlayer rp = registeredPlayerFromDeckFile(paths[i]);
+            rp.setPlayer(GamePlayerUtil.createAiPlayer("Ai(" + (i + 1) + ")-" + rp.getDeck().getName(), i));
             players.add(rp);
         }
         final GameRules rules = new GameRules(GameType.Constructed);

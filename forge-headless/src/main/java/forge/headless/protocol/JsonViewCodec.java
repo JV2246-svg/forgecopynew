@@ -113,6 +113,11 @@ public final class JsonViewCodec {
         }
     }
 
+    /** Encodes a protocol-method argument (TrackableObjects become plain refs). */
+    public static JsonElement encodeArg(final Object value) {
+        return encodeValue(value, JsonViewCodec::keyOf);
+    }
+
     static String keyOf(final TrackableObject obj) {
         if (obj instanceof CardStateView) {
             final CardStateView csv = (CardStateView) obj;

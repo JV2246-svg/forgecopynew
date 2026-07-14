@@ -42,7 +42,9 @@ public class HeadlessGuiBase implements IGuiBase {
     @Override public void invokeInEdtLater(final Runnable runnable) { runnable.run(); }
     @Override public void invokeInEdtAndWait(final Runnable proc) { proc.run(); }
     @Override public void runBackgroundTask(final String message, final Runnable task) { task.run(); }
-    @Override public boolean isGuiThread() { return true; }
+    // false so InputSyncronizedBase's "must not block the EDT" assert passes:
+    // headless has no EDT, all invokeInEdt* hooks run inline on the caller
+    @Override public boolean isGuiThread() { return false; }
     @Override public String getAssetsDir() { return assetsDir; }
     @Override public ImageFetcher getImageFetcher() { return null; }
     @Override public ISkinImage getSkinIcon(final FSkinProp skinProp) { return null; }
@@ -77,7 +79,7 @@ public class HeadlessGuiBase implements IGuiBase {
     @Override public void showSpellShop() { }
     @Override public void showBazaar() { }
     @Override public IGuiGame getNewGuiGame() { return null; }
-    @Override public HostedMatch hostMatch() { return null; }
+    @Override public HostedMatch hostMatch() { return new HostedMatch(); }
     @Override public UpnpServiceConfiguration getUpnpPlatformService() { return null; }
     @Override public boolean hasNetGame() { return false; }
 }
