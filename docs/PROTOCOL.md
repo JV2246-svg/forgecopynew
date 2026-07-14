@@ -80,9 +80,15 @@ Method names (`m`) are the `ProtocolMethod` enum names verbatim — greppable in
    full library order and both hands. Harmless for loopback solo play; MUST be resolved before
    any remote seat exists. Investigate how stock net play filters visibility before designing.
 2. **Envelope + reply pool** — port `ReplyPool` semantics onto WebSocket frames.
-3. **`CardinalWsServer`** — Netty WS endpoint hosting a match the way `forge.headless.Main`
-   does, with one human seat whose `IGuiGame`/`PlayerControllerHuman` traffic goes over the
-   socket instead of to a GUI.
+3. **`CardinalWsServer`** — ✅ Spectator milestone DONE 2026-07-14
+   (`forge.headless.server.CardinalWsServer` + `GameStreamHandler`, port 17171, path /game).
+   Netty WS endpoint; per connection it runs an AI-vs-AI game on a dedicated thread and
+   streams per-phase JSON deltas (first delta carries the world), then an end frame.
+   Verified end-to-end by `forge.headless.SpectateClient` — deliberately built on the JDK's
+   own WebSocket client, not netty: 168 frames / 137 KB / winner reported correctly.
+   Deviation from the envelope spec: no separate "gameView" message — bootstrap rides in the
+   first delta's "new" table (revisit when per-seat perspective filtering exists).
+   Remaining for this chunk (now folded into 4-5): the human seat / IGuiGame bridge.
 4. **Scripted test client** — a dumb JSON client that mulligans to keep, passes priority
    forever, and loses on schedule. When that game completes over the socket, Phase 2's core
    is proven. (Same trick as Phase 1's AI-vs-AI proof: cheapest possible full-loop test.)

@@ -1,9 +1,6 @@
 package forge.headless;
 
-import java.io.File;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -12,16 +9,10 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import forge.deck.Deck;
-import forge.deck.io.DeckSerializer;
 import forge.game.Game;
 import forge.game.GameEndReason;
 import forge.game.GameLogEntry;
-import forge.game.GameRules;
-import forge.game.GameType;
 import forge.game.Match;
-import forge.game.player.RegisteredPlayer;
-import forge.player.GamePlayerUtil;
 
 /**
  * Headless Forge entry point: boots the engine with no UI and no telemetry,
@@ -46,26 +37,18 @@ public final class Main {
 
         HeadlessBootstrap.boot();
 
-        final List<RegisteredPlayer> players = new ArrayList<>();
-        for (int i = 0; i < 2; i++) {
-            final Deck deck = DeckSerializer.fromFile(new File(args[i]));
-            if (deck == null) {
-                System.err.println("Could not load deck: " + args[i]);
-                System.exit(1);
-            }
-            final RegisteredPlayer rp = new RegisteredPlayer(deck);
-            rp.setPlayer(GamePlayerUtil.createAiPlayer("Ai(" + (i + 1) + ")-" + deck.getName(), i));
-            players.add(rp);
-        }
-
         final int nGames = args.length > 2 ? Integer.parseInt(args[2]) : 1;
 
-        final GameRules rules = new GameRules(GameType.Constructed);
-        rules.setAppliedVariants(EnumSet.of(GameType.Constructed));
-
-        final Match match = new Match(rules, players, "HeadlessMatch");
+        final Match match;
+        try {
+            match = MatchFactory.createTwoAiMatch(args[0], args[1], "HeadlessMatch");
+        } catch (final IllegalArgumentException e) {
+            System.err.println(e.getMessage());
+            System.exit(1);
+            return;
+        }
         for (int i = 0; i < nGames; i++) {
-            playGame(match, i, rules.getSimTimeout());
+            playGame(match, i, match.getRules().getSimTimeout());
         }
 
         System.exit(0);
