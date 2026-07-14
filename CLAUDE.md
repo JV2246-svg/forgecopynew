@@ -174,8 +174,8 @@ Ran a full headless constructed game against a minimal `res/` skeleton (junction
 | # | Phase | Est. | Status |
 |---|---|---|---|
 | **0** | **Env setup + build Forge from source** | 1 hr | ✅ **DONE 2026-07-14** |
-| **1** | **Headless engine bootstrap (strip UI, Adventure, Quest)** | 1–2 wks | 🔵 **IN PROGRESS** |
-| 2 | JSON game protocol over the engine's view/controller seam | 3–5 wks | ⬜ |
+| **1** | **Headless engine bootstrap (strip UI, Adventure, Quest)** | 1–2 wks | ✅ **DONE 2026-07-14** |
+| **2** | **JSON game protocol over the engine's view/controller seam** | 3–5 wks | 🔵 **NEXT** |
 | 3 | Scryfall data layer (bulk ingest → SQLite, image cache) | 2 wks | ⬜ |
 | 4 | Deck import (paste / file / Archidekt) | 2 wks | ⬜ |
 | 5 | Design system | 2–3 wks | ⬜ |
@@ -216,7 +216,9 @@ System.out.println(new Foo(1, "x"));
 - Run: `java -jar forge-headless\target\forge-headless-*-jar-with-dependencies.jar <deck1.dck> <deck2.dck> [n]` with cwd = `forge-gui` (or `-Dforge.assets.dir=`).
 - ✅ Classpath diet: `rssreader` excluded from forge-headless (verified game still runs). `sentry` must STAY on the classpath (forge-game/forge-ai classes import it for breadcrumbs) but is inert — `Sentry.init` is never called, so all calls hit the no-op hub, zero network. Swap for a no-op stub jar at iOS AOT time.
 - ✅ Minimal asset set verified empirically — see §5. ~36 MB for constructed play.
-- ⬜ Remaining: push `cardinal` to a GitHub fork (needs Jack's GitHub account). Then Phase 1 is done and Phase 2 (JSON protocol) begins.
+- ✅ `cardinal` pushed to Jack's fork: https://github.com/JV2246-svg/forgecopynew (remote name `fork`; `origin` stays pointed at upstream Card-Forge/forge for pulling updates). Git Credential Manager token cached — pushes are non-interactive now.
+
+**PHASE 1 COMPLETE (2026-07-14).** Next: Phase 2 — JSON game protocol over the `IGuiGame`/`PlayerControllerHuman` seam.
 
 **Learned along the way:**
 - `IGuiBase` is only 33 methods; a ready headless stub existed in `forge-gui/tools/java/ForgeMatrixWriter.java`.
