@@ -15,6 +15,17 @@
             <groupId>forge</groupId>
             <artifactId>forge-gui</artifactId>
             <version>${project.version}</version>
+            <exclusions>
+                <!-- changelog RSS feed; only forge.util.RSSReader touches it and nothing headless calls that -->
+                <exclusion>
+                    <groupId>com.apptasticsoftware</groupId>
+                    <artifactId>rssreader</artifactId>
+                </exclusion>
+                <!-- io.sentry must stay on the classpath: forge-game/forge-ai classes import it
+                     for breadcrumbs. It is inert because forge.headless.Main never calls
+                     Sentry.init (no-op hub, no network). Replace with a no-op stub jar when
+                     jar size matters (iOS AOT phase). -->
+            </exclusions>
         </dependency>
     </dependencies>
 

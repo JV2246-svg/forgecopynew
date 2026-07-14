@@ -151,18 +151,14 @@ Not answerable from documentation. **Must be answered empirically.** See Phase 3
 - **Exclude `rssreader`** — only used for a changelog feed.
 - Confirm `testng` is test-scope only.
 
-### Asset cut list — ~275 MB deleted before writing a line of code
-| Path | Size | Verdict |
-|---|---|---|
-| `forge-gui/res/cardsfolder` | 132 MB | **KEEP** — 33,290 card scripts |
-| `forge-gui/res/adventure` | **154 MB** | CUT |
-| `forge-gui/res/languages` | 55 MB | CUT all but English |
-| `forge-gui/res/quest` | 39 MB | CUT |
-| `forge-gui/res/skins` | 18 MB | CUT — building our own look |
-| `forge-gui/res/music` | 17 MB | CUT |
-| `forge-gui/res/conquest` | 6.4 MB | CUT |
+### Asset requirements — VERIFIED EMPIRICALLY 2026-07-14
+Ran a full headless constructed game against a minimal `res/` skeleton (junction links, see `FORGE REMAKE ALL/res-minimal-test/`). **The engine needs only these 11 folders** (sizes are on-disk actuals; cardsfolder ships zipped):
 
-Ships ~150 MB of card data. Card art pulled from Scryfall on demand and cached.
+`ai` (0.1) · `blockdata` (0.3) · `cardsfolder` (23) · `defaults` (0.2) · `editions` (3.9) · `effects` (1.6) · `formats` (1.7) · `languages` (en-US only, <1) · `lists` (4.2) · `setlookup` (0.05) · `tokenscripts` (0.1)
+
+**≈ 36 MB shipping payload** for constructed play — far below the original ~150 MB estimate. Limited modes will additionally want `draft` (1.3), `sealed` (0.05), `cube` (1.1), and possibly `deckgendecks` (10.4) for deck generation. Everything else — `adventure` (139), `languages` translations (53), `skins` (17), `music` (16), `quest` (7.5), `conquest` (1.1), `sound`, `puzzle`, `tutorial` — is never touched headless.
+
+**Strategy: cut at packaging time, not in the repo.** The repo keeps all assets so the stock desktop client stays runnable for reference and upstream merges stay trivial; the distribution step (later phase) copies only the folders above. Card art pulled from Scryfall on demand and cached.
 
 ### Build facts
 - **Java 17** exactly.
@@ -218,7 +214,9 @@ System.out.println(new Foo(1, "x"));
 - ✅ Proven headless: engine plays full AI-vs-AI games from the console (first via desktop jar's `sim` mode, then via our own module).
 - ✅ New Maven module **`forge-headless`** on branch `cardinal`: depends only on `forge-gui` (the non-Swing shared layer) → core/game/ai. Entry point `forge.headless.Main`, platform stub `HeadlessGuiBase` (33 no-op methods). **Does not call `Sentry.init`** — note: stock desktop `Main.java` phones home to sentry.asgardsrealm.net on every launch with a hardcoded DSN.
 - Run: `java -jar forge-headless\target\forge-headless-*-jar-with-dependencies.jar <deck1.dck> <deck2.dck> [n]` with cwd = `forge-gui` (or `-Dforge.assets.dir=`).
-- ⬜ Next: strip sentry/rssreader deps from the headless classpath; asset cut list (§5); decide fork/remote strategy for the `cardinal` branch.
+- ✅ Classpath diet: `rssreader` excluded from forge-headless (verified game still runs). `sentry` must STAY on the classpath (forge-game/forge-ai classes import it for breadcrumbs) but is inert — `Sentry.init` is never called, so all calls hit the no-op hub, zero network. Swap for a no-op stub jar at iOS AOT time.
+- ✅ Minimal asset set verified empirically — see §5. ~36 MB for constructed play.
+- ⬜ Remaining: push `cardinal` to a GitHub fork (needs Jack's GitHub account). Then Phase 1 is done and Phase 2 (JSON protocol) begins.
 
 **Learned along the way:**
 - `IGuiBase` is only 33 methods; a ready headless stub existed in `forge-gui/tools/java/ForgeMatrixWriter.java`.
