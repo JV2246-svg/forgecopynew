@@ -99,3 +99,8 @@ __pycache__
 .claude
 # EDHREC commander matrix tool intermediates
 forge-gui/tools/build
+
+# Cardinal protocol dump artifacts
+/snapshot.json
+/delta-first.json
+/delta-sample.json

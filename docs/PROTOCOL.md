@@ -70,7 +70,12 @@ Method names (`m`) are the `ProtocolMethod` enum names verbatim — greppable in
    harness `forge.headless.SnapshotDump`). Real finished game: 175 objects (80 cards / 91 card
    states / 2 players / combat / game) in 15 ms, 77 KB compact. Values dispatch on runtime type
    (10 branches cover all 22 TrackableTypes); refs are `{"$ref": "type:id"}`; card states keyed
-   `cardState:id:stateOrdinal` mirroring DeltaPacket. Remaining: `DeltaPacket` → JSON.
+   `cardState:id:stateOrdinal` mirroring DeltaPacket. ✅ Delta half DONE same day
+   (`JsonViewCodec.delta`, harness `forge.headless.DeltaDump`): real game, delta collected
+   per phase change via `DeltaSyncManager` on the game thread — 177 packets, first packet
+   69.7 KB (initial world in "new"), **avg 878 bytes/phase thereafter**, whole game 155 KB.
+   Gotcha fixed and documented: delta writers MUST use Gson `serializeNulls()` — a null
+   property means "reverted to default" and default Gson drops it silently.
    **⚠️ Open question for chunk 3+: per-seat hidden-info filtering.** The snapshot contains
    full library order and both hands. Harmless for loopback solo play; MUST be resolved before
    any remote seat exists. Investigate how stock net play filters visibility before designing.
