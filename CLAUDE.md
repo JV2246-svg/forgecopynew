@@ -6,14 +6,16 @@
 
 ## 1. What we are building
 
-A **sleek, modern iOS (iPhone-first) Magic: The Gathering client**, built on top of the **Forge** rules engine.
+A **sleek, modern Magic: The Gathering client** built on top of the **Forge** rules engine — **desktop (Windows) first, iOS second**, from one Kotlin/Compose Multiplatform codebase.
 
-Forge is an open-source MTG rules engine (GPL, Java, ~15 years old, not affiliated with Wizards of the Coast). It implements **99%+ of all MTG cards ever printed** — more than official Magic Online. It runs on Windows/Mac/Linux/Android. **There is no working iOS version.**
+> **Strategy decision (2026-07-14):** Jack chose desktop-first with Compose Multiplatform. Rationale: he develops on Windows and plays on Windows; Compose targets Windows/Mac/Linux AND iOS from one codebase; Kotlin interoperates natively with the Java engine. The iOS port later is honestly **moderate changes** (Compose-for-iOS + engine-on-device AOT), not "minor," but the entire protocol/data/UI-logic stack transfers. This consciously trades away "100% native SwiftUI" from the original plan. Jack has a Mac available for when iOS work begins.
+
+Forge is an open-source MTG rules engine (GPL, Java, ~15 years old, not affiliated with Wizards of the Coast). It implements **99%+ of all MTG cards ever printed** — more than official Magic Online. Its own UI is the thing we're replacing.
 
 We keep Forge's **engine**. We throw away Forge's **UI**.
 
 ### Requirements
-- **Offline play vs. AI on the phone.** Non-negotiable. This forces the Java engine onto the device (see §4).
+- **Offline play vs. AI**, on desktop now, on the phone later. On iOS this forces the Java engine onto the device (see §4) — that risk is deferred, not deleted.
 - **Online play with friends** via a self-hosted personal server.
 - All MTG play modes: Constructed, Commander, Brawl, Draft, Sealed, Archenemis/Planechase/Vanguard, etc.
 - **Scryfall** as the card data + image source.
@@ -23,7 +25,7 @@ We keep Forge's **engine**. We throw away Forge's **UI**.
 ### Anti-goals (explicitly cut)
 - **No Adventure mode. No Quest mode. No Planar Conquest.** Play modes only.
 - **No monetization. Free forever.** (See §3 — this is a hard legal constraint, not a preference.)
-- No App Store release. Distribution is TestFlight or sideload.
+- No App Store release. Desktop distribution is a plain download; iOS is TestFlight or sideload.
 
 ---
 
@@ -39,7 +41,7 @@ We keep Forge's **engine**. We throw away Forge's **UI**.
 - ❌ Do not condescend or over-explain fundamentals. He works with computers and software daily. He will tell you if he needs more.
 - ❌ Do not assume prior Java, Maven, Xcode, or Swift knowledge. Introduce those as they come up.
 
-**Known risk to name honestly:** Phase 7 (the SwiftUI client) is ~8–12 weeks for a professional and is where a first-time coder realistically hits a wall. Jack has chosen to proceed and learn. Support that, but do not pretend the wall isn't there.
+**Known risk to name honestly:** Phase 6 (the Compose desktop client) is ~8–12 weeks for a professional and is where a first-time coder realistically hits a wall. Jack has chosen to proceed and learn. Support that, but do not pretend the wall isn't there. Kotlin is the language to introduce gradually from Phase 2 onward (protocol work can be done in Java or Kotlin — prefer Kotlin where practical so the learning starts early).
 
 ---
 
@@ -62,9 +64,10 @@ We keep Forge's **engine**. We throw away Forge's **UI**.
 **Keep Forge's brain. Delete its face.**
 
 ```
-┌─────────────────────────────┐
-│  SwiftUI client (iPhone)    │  ← 100% native. Real iOS polish.
-└──────────┬──────────────────┘
+┌──────────────────────────────────────────┐
+│  Compose Multiplatform client (Kotlin)   │
+│  Windows/Mac/Linux now → iOS later       │
+└──────────┬───────────────────────────────┘
            │ JSON over WebSocket   ← ONE protocol, TWO transports
      ┌─────┴─────┐
      │           │
@@ -77,9 +80,11 @@ ws://127.0.0.1   ws://your-server
 └─────────────────────────────┘
 ```
 
-The engine runs on a background thread **inside the app** and exposes a loopback WebSocket. The client points at `localhost` for solo play, or at a home server for multiplayer. Identical protocol both ways.
+**On desktop:** client and engine run in the **same JVM process** — the engine on a background thread exposing a loopback WebSocket. Trivially easy; no AOT compilation, no Phase-3-style risk at all.
 
-**Why this matters:** no Java↔Swift FFI bridging, no separate online/offline code paths, and the multiplayer server is the same engine running on a plain JVM (no iOS toolchain needed server-side).
+**On iOS later:** same client code, but the engine must be AOT-compiled onto the device (the old Phase 3 spike — MobiVM vs GraalVM — now gates only the iOS port, nothing else).
+
+**Why the WebSocket stays even in-process:** identical code paths for offline and online play, and the multiplayer server is the same engine on a plain JVM. Resist the temptation to have the desktop client call engine classes directly — that convenience would fork the codebase into desktop-only and iOS-only paths, which is exactly what we're avoiding.
 
 **Multiplayer networking:** put Jack + friends on a **Tailscale/WireGuard mesh**. Zero port-forwarding, no exposed ports. (Forge's own net play uses TCP 36743 and has no matchmaking — it's explicitly designed for playing with people you know.)
 
@@ -175,30 +180,31 @@ Ships ~150 MB of card data. Card art pulled from Scryfall on demand and cached.
 | **0** | **Env setup + build Forge from source** | 1 hr | ✅ **DONE 2026-07-14** |
 | **1** | **Headless engine bootstrap (strip UI, Adventure, Quest)** | 1–2 wks | 🔵 **IN PROGRESS** |
 | 2 | JSON game protocol over the engine's view/controller seam | 3–5 wks | ⬜ |
-| **3** | **⚠️ MobiVM spike — GO/NO-GO GATE** | 3–5 wks | ⬜ |
-| 4 | Scryfall data layer (bulk ingest → SQLite, image cache) | 2 wks | ⬜ |
-| 5 | Deck import (paste / file / Archidekt) | 2 wks | ⬜ |
-| 6 | Design system | 2–3 wks | ⬜ |
-| 7 | SwiftUI client v1 (offline vs AI) | 8–12 wks | ⬜ |
-| 8 | Multiplayer + personal server (Tailscale) | 3 wks | ⬜ |
-| 9 | Polish, iPad, TestFlight | 3 wks | ⬜ |
+| 3 | Scryfall data layer (bulk ingest → SQLite, image cache) | 2 wks | ⬜ |
+| 4 | Deck import (paste / file / Archidekt) | 2 wks | ⬜ |
+| 5 | Design system | 2–3 wks | ⬜ |
+| 6 | **Compose Multiplatform desktop client v1** (Windows, offline vs AI) | 8–12 wks | ⬜ |
+| 7 | Multiplayer + personal server (Tailscale) | 3 wks | ⬜ |
+| 8 | **⚠️ Engine-on-iOS spike — GO/NO-GO for iOS port** (MobiVM vs GraalVM) | 3–5 wks | ⬜ |
+| 9 | iOS port: Compose-for-iOS client + on-device engine | 4–8 wks | ⬜ |
+| 10 | Polish, iPad, TestFlight | 3 wks | ⬜ |
 
-**~6–9 months** at professional pace. Longer for Jack; that's expected and fine.
+**~6–9 months to a finished desktop app**, iOS on top of that. Longer for Jack; that's expected and fine.
 
-### ‼️ Sequencing rule
-**Phase 3 is the riskiest thing in the project and should be spiked EARLY — before Phase 2 and before any UI work.** If the engine cannot AOT-compile for iOS, everything downstream is worthless. Find out in week 2, not month 5.
+### Sequencing notes (revised 2026-07-14 with desktop-first decision)
+The old rule was "spike iOS AOT in week 2, because if it fails everything is worthless." **That rule is retired**: the desktop app has standalone value regardless of what iOS allows, so the AOT spike (old Phase 3) now sits at Phase 8, gating only the iOS port.
 
-**Phase 3, Step 1 is a one-day kill shot:** build a hello-world MobiVM app for arm64 on a physical iPhone containing exactly:
+**But run the one-day kill shot opportunistically earlier.** Jack has a Mac. Some weekend while the desktop client is underway: Xcode + a hello-world MobiVM app for arm64 on a physical iPhone containing exactly:
 ```java
 record Foo(int a, String b) {}
 System.out.println(new Foo(1, "x"));
 ```
-- **Prints?** → road is open.
-- **Fails?** → stop, go to fallbacks. Four months saved.
+- **Prints?** → the iOS road is open; carry on with confidence.
+- **Fails?** → we know years early, and plan the iOS port around the fallbacks below.
 
-### Phase 3 fallbacks (if records fail)
+### Engine-on-iOS fallbacks (if records fail on MobiVM)
 1. **De-record the engine.** 86 records → plain classes is mechanical and IDE-assisted. ~2–3 days. **Try this first.**
-2. **GraalVM native-image via Gluon Substrate.** Actively maintained, targets iOS, handles modern Java properly. It demands reflection config — but the engine has only six reflection sites, so that cost is near zero. **This may end up being the better path than MobiVM outright.**
+2. **GraalVM native-image.** Actively maintained, targets iOS, handles modern Java properly. It demands reflection config — but the engine has only six reflection sites, so that cost is near zero. **This may end up being the better path than MobiVM outright.** (Note: with a Compose/Kotlin-Native iOS app, embedding the engine as a GraalVM-built static library and talking to it over the loopback socket is the leading integration theory — to be validated in Phase 8.)
 
 ---
 
@@ -206,7 +212,7 @@ System.out.println(new Foo(1, "x"));
 
 **Phase 1 in progress** (started 2026-07-14, same day Phase 0 completed).
 
-**Resolved:** Jack is on Windows 11 Pro x64 (16 cores — full build takes ~2.5 min). Phases 0–2 proceed here; **Mac access must be arranged before Phase 3.** Jack is a long-time Forge player — no UI orientation needed.
+**Resolved:** Jack is on Windows 11 Pro x64 (16 cores — full build takes ~2.5 min). All desktop-track phases (0–7) proceed here. **Jack has a Mac** — needed only for the iOS spike/port (Phases 8–10) and available for the opportunistic kill-shot test. Jack is a long-time Forge player — no UI orientation needed. **Client tech: Compose Multiplatform (Kotlin), desktop-first** — decided 2026-07-14, see §1.
 
 **Phase 1 progress:**
 - ✅ Proven headless: engine plays full AI-vs-AI games from the console (first via desktop jar's `sim` mode, then via our own module).
@@ -220,7 +226,7 @@ System.out.println(new Foo(1, "x"));
 - Desktop jar must run with cwd = `forge-gui` in dev (hardcoded `../forge-gui/` assets path).
 - `TimeLimitedCodeBlock` lives in forge-gui-desktop; forge-headless inlines its own timeout runner.
 
-**Prereqs for Phase 3:** Mac, Xcode, Apple Developer account ($99/yr), physical iPhone.
+**Prereqs for the iOS track (Phase 8+, or the early kill-shot test):** Jack's Mac, Xcode, Apple Developer account ($99/yr), physical iPhone.
 
 ---
 
