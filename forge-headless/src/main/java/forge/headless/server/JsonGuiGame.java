@@ -232,6 +232,22 @@ public final class JsonGuiGame extends AbstractGuiGame {
                 }
                 return pickByIndex(options, v);
             }
+            case manipulateCardList: {
+                // null = leave the list as offered (identity ordering)
+                if (isNull) {
+                    final List<CardView> unchanged = new ArrayList<>();
+                    for (final CardView card : (Iterable<CardView>) a[1]) {
+                        unchanged.add(card);
+                    }
+                    return unchanged;
+                }
+                System.out.println("manipulateCardList non-null replies not implemented yet; keeping order");
+                final List<CardView> fallback = new ArrayList<>();
+                for (final CardView card : (Iterable<CardView>) a[1]) {
+                    fallback.add(card);
+                }
+                return fallback;
+            }
             default:
                 if (!isNull) {
                     System.out.println("No decoder for " + call.method() + " reply; using null");

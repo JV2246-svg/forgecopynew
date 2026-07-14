@@ -181,6 +181,17 @@ public final class JsonViewCodec {
         if (value instanceof DeltaPacket.CombatData) {
             return encodeCombat((DeltaPacket.CombatData) value);
         }
+        if (value instanceof forge.player.PlayerZoneUpdate) {
+            final forge.player.PlayerZoneUpdate pzu = (forge.player.PlayerZoneUpdate) value;
+            final JsonObject json = new JsonObject();
+            json.addProperty("player", keyOf(pzu.getPlayer()));
+            final JsonArray zones = new JsonArray();
+            for (final Object zone : pzu.getZones()) {
+                zones.add(((Enum<?>) zone).name());
+            }
+            json.add("zones", zones);
+            return json;
+        }
         if (value instanceof int[]) {
             final JsonArray array = new JsonArray();
             for (final int i : (int[]) value) {

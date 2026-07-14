@@ -103,8 +103,24 @@ Method names (`m`) are the `ProtocolMethod` enum names verbatim — greppable in
      the next-game/rematch flow.
    - Mandatory selections (discard to hand size) arrive as `setSelectables` + both buttons
      disabled; clients must answer with a `selectCard` input.
-5. **Interactive surface** — implement the remaining blocking questions one at a time,
-   driving coverage from real games (log any ProtocolMethod hit that is still unimplemented).
+5. **Interactive surface** — 🔵 ONGOING, demand-driven (started 2026-07-14). All gaps hit
+   across three different matchups are closed: PlayerZoneUpdate encodes structurally
+   ({player, zones}), manipulateCardList defaults to identity ordering, every other dialog
+   has a null-reply default. Both verification games (werewolf aggro, whisperers discard)
+   ran 1,000+ frames with zero "No decoder" / "Unsupported input" log lines. New gaps will
+   surface as the Compose client exercises dialogs interactively; the server logs every
+   fallback, so they are self-announcing. This chunk stays open through Phase 6.
+
+### Hidden information — RESOLVED (as a documented trust model, 2026-07-14)
+Verified empirically and in source: the trackable tree carries hidden card data (Name,
+ImageKey) for cards in Library/Hand; `CardView.canBeShownTo` is a **render-time** check.
+This is stock Forge net play's model too — clients are trusted not to render hidden cards
+(consistent with its play-with-friends design, 15+ years). Consequences for Cardinal:
+- Solo play (engine in-process): non-issue by construction.
+- Friends over Tailscale: same trust model as stock Forge. Acceptable, documented.
+- Anything less trusted: **blocked** until server-side per-seat filtering exists (strip
+  hidden props at JSON-encode time per `canBeShownTo(seat)`, emit reveal deltas on
+  visibility changes). Scoped to the multiplayer phase (Phase 7).
 
 ## Decisions log
 
