@@ -90,6 +90,27 @@ one token swap, decided below. Round 1's three-theme system is retired.
 4. The big button: one context-aware button (PASS/ATTACK/BLOCK/END TURN,
    as mocked) vs separate buttons.
 
+## Baseline v0 (2026-07-14)
+
+Captured from Jack's screenshot of a live match (mulligan decision, Human vs
+Soderman) and reconstructed in the design lab. Region vocabulary for the
+part-by-part rebuild:
+
+1. Window chrome (Forge pill, Home/Deck Editor/match tabs)
+2. Stack/Combat/Log/Dependencies tab stack
+3. Dock (utility buttons)
+4. Prompt panel (engine dialog + Keep/Mulligan/OK/Cancel)
+5. Player sidebar (avatar, life, zone counts, mana pool) ×2
+6. Phase-stop strip (UP/DR/M1/... — cyan = stop) ×2
+7. Battlefield surface ×2
+8. Hand panel
+9. Card Detail panel
+10. Card Picture panel
+11. Global (background texture, palette, fonts) — last
+
+Process: one region per round, Jack approves before the next; approved
+values (colors/sizes/spacing) get recorded here per region.
+
 ## Decisions log
 
 - 2026-07-14 — Round 1 flat-panel design rejected (blocky).
