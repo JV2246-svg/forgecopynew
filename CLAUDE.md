@@ -177,7 +177,7 @@ Ran a full headless constructed game against a minimal `res/` skeleton (junction
 | **1** | **Headless engine bootstrap (strip UI, Adventure, Quest)** | 1–2 wks | ✅ **DONE 2026-07-14** |
 | **2** | **JSON game protocol over the engine's view/controller seam** | 3–5 wks | ✅ **CORE PROVEN 2026-07-14** (chunk 5 dialog-coverage stays open, demand-driven, through Phase 6) |
 | **3** | **Scryfall data layer (bulk ingest → SQLite, image cache)** | 2 wks | ✅ **CORE DONE 2026-07-14** — see docs/DATA.md. 115,874 printings ingest in ~17 s; daily freshness check costs 1 request; playable-flag join vs engine = 94.8%; versioned image cache verified. |
-| 4 | Deck import (paste / file / Archidekt) | 2 wks | ⬜ |
+| **4** | **Deck import (paste / file / Archidekt)** | 2 wks | ✅ **CORE DONE 2026-07-14** — `forge.headless.deck`: DeckImporter wraps forge-core's DeckRecognizer (plain/MTGA/sections), ArchidektImporter uses the real per-deck API, DeckImportCli saves playable .dck. E2E verified: live Archidekt deck imported clean (81/81) and played by the engine. |
 | 5 | Design system | 2–3 wks | ⬜ |
 | 6 | **Compose Multiplatform desktop client v1** (Windows, offline vs AI) | 8–12 wks | ⬜ |
 | 7 | Multiplayer + personal server (Tailscale) | 3 wks | ⬜ |
