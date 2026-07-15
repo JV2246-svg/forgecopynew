@@ -1,44 +1,53 @@
 # Project Cardinal — Design system (Phase 5)
 
-*Status: FIRST CUT 2026-07-14, distilled from Jack's three reference mockups.
-Living companion: the interactive design lab artifact (theme switcher + token
-swatches) — iterate there, record decisions here. This file is the contract
-the Compose client implements.*
+*Status: ROUND 2, 2026-07-14. Round 1 (flat themable panels) REJECTED by Jack:
+"blocky, not seamless/smooth." Direction now locked: **Forge's familiar
+battlefield arrangement with a Hearthstone/Arena-grade facelift** — a facelift,
+not a reinvention. Living companion: the interactive design lab artifact —
+iterate there, record decisions here. This file is the contract the Compose
+client implements.*
 
-## Core principle: one layout contract, themable surfaces
+## Core principle: one physical object, not a grid of panels
 
-Jack's three reference mockups (warm library / clean slate / neon night) are
-the same interface wearing three skins. The design system therefore separates:
+The play screen reads as a **table** — wooden rim, felt top, soft sheen — and
+every UI element floats on it as a physical thing: medallions, gems, coins,
+one big golden button. Rules that make the "smooth" read:
 
-- **Layout contract** — where things live and how they behave. Fixed.
-- **Theme tokens** — every color, glow, texture and display face. Swappable.
-  Themes are data, not code; `Slate` / `Library` / `Neon` are the launch set.
+- **Zero hard-edged rectangles.** No 1px-bordered panels. Radii are large
+  and organic; depth comes from layered soft shadows + inner highlights,
+  never from outlines.
+- **Circular anchors.** Hero portraits, life gems, zone-count coins, mana
+  crystals, the pass button, the log scroll — round is the default shape.
+- **One accent metal.** Warm gold trim (#d9b565 family) on everything
+  interactive; it is the "you can touch this" signal.
+- **Soft motion.** Playable cards pulse gently; hand cards rise on hover;
+  the pass button swells. Nothing snaps, everything eases.
 
-## Layout contract (play screen)
+## Layout contract (play screen — Forge's arrangement, kept)
 
 ```
-┌ plaque:opponent ──────┬──────────────────────────────┬─ plaque/stack ─┐
-│ log / chat rail       │   opponent battlefield       │  phase ladder  │
-│ (left, ~13% width)    │   (lands+mana row, creatures)│  UPKEEP..END   │
-│                       ├──────────────────────────────┤  PASS TURN     │
-│                       │   life divider  20 ♥ vs ◆ 16 │  [ATTACK]      │
-│                       ├──────────────────────────────┤                │
-│                       │   player battlefield         │                │
-│                       │   (creatures, lands+mana row)│                │
-├ plaque:player ────────┴───────── hand (fanned) ──────┴─ utility ──────┘
+  hero:opponent○         opponent lands+mana row
+   (portrait,            opponent creatures row
+    life gem,     ~~~~~ the river · turn medallion · phase pips ~~~~~
+    zone coins)          player creatures row                 ( PASS )
+  hero:you○              player lands+mana row                 big gold
+   + mana crystals              hand, fanned over the table edge
 ```
 
-- **Player plaques** (corners): avatar, life badge, deck/graveyard/hand counts.
-- **Life divider**: both totals, segmented commander/poison pips, life bars.
-  This is the visual center of gravity — game state readable in one glance.
-- **Phase ladder** (right): all phases listed vertically, current phase lit.
-  Doubles as the stop/skip configuration surface (right-click a phase to
-  toggle auto-pass — replaces Forge's buried prefs).
-- **Hand**: fanned arc, bottom center, overlapping the table edge. Hover
-  raises + zooms a card.
-- **Battlefield rows**: lands+mana furthest from the divider, creatures
-  nearest — combat happens across the divider.
-- **Log/chat rail** (left): tabs for log / chat / settings.
+- **Hero medallions** (left edge, opponent top / player bottom): circular
+  portrait, life gem (player warm red / opponent cool blue), zone-count
+  coins (deck/grave/hand), mana crystals under the player's.
+- **The river**: a soft glowing midline, not a bar. Center turn medallion
+  shows "Turn N · Phase" plus phase pips; right-click (long-press) opens
+  stop/auto-pass settings. Replaces round 1's phase ladder.
+- **The one big button** (right center, Hearthstone's signature): context-
+  aware label — PASS / ATTACK / BLOCK / END TURN. The hand rests here all game.
+- **Log/chat**: collapsed to a scroll medallion on the left edge; expands on
+  hover/tap. No permanent rail.
+- **Hand**: fanned arc over the bottom table edge; hover raises + zooms.
+- **Battlefield rows**: lands+mana in the back row, creatures forward —
+  combat happens across the river. Exactly how Forge players already read
+  the board.
 
 ## Interaction states (all driven by existing protocol messages)
 
@@ -53,31 +62,37 @@ the same interface wearing three skins. The design system therefore separates:
 | Current phase | lit ladder entry | `Phase` property delta |
 | Prompt | text in log rail header + buttons | `showPromptMessage` / `updateButtons` |
 
-## Theme tokens (v1 names)
+## Tokens (v2 names)
 
-`ground, table, tableEdge, panel, panelEdge, text, textDim, accent, accentSoft,
-lifeYou, lifeOpp, button, buttonEdge, buttonText, primary, primaryEdge,
-primaryText, divider, glow, cardFrame, textureOpacity, headFont`
+`roomVignette, tableRim, felt, riverGlow, goldTrim, goldBright, textWarm,
+textDim, lifeYou, lifeOpp, manaCrystal, playableGlow (green), attackGlow (red),
+blockGlow (blue), selectedOutline (gold), cardFrame, displayFont, uiFont`
 
-Values for the three launch themes live in the design lab artifact (and will
-land here as final hex once iterated). Working default: **Slate**.
+Board *material* (felt vs parchment) is the only planned skin dimension —
+one token swap, decided below. Round 1's three-theme system is retired.
 
-## Rules that hold across every theme
+## Invariant rules
 
 - Card aspect ratio is exactly 63:88. Card images from Scryfall are rendered
   complete and uncropped, artist/copyright line visible (API terms).
-- Life colors: player warm (red-orange family), opponent cool (blue family) —
-  consistent across themes so the divider reads instantly.
-- Attacker red / blocker blue never change with theme (game semantics, not skin).
-- One glow color per theme (`accent`) for "you may act on this"; semantic
-  combat colors are separate and fixed.
-- Type: one display face per theme (plaques, life numbers, phase ladder), one
-  UI face shared by all themes for body/log text.
+- Life colors: player warm (red family gem), opponent cool (blue family gem).
+- Attacker red / blocker blue / playable green / selected gold are game
+  semantics — never reskinned.
+- Type: serif display face (Palatino family until a licensed face is chosen)
+  for names, life numbers, the medallion; system UI face for log/body.
 
 ## Open decisions (answer in the design lab, record here)
 
-1. Default theme — working answer Slate; Library and Neon ship as skins.
-2. Hand: fanned arc (pretty, overlaps board) vs flat strip (more board visible).
-3. Log/chat rail: permanent vs collapsible.
-4. ATTACK button: contextual (combat only, per neon mockup) vs always-visible-disabled.
-5. Avatar art source: Scryfall art crops w/ artist credit vs custom set.
+1. Board material: green felt (as mocked) vs parchment (library mockup vibe).
+2. Opponent hand: fanned card backs at the top edge vs hand-count coin only.
+3. Life gems on portraits (as mocked) vs also restoring the center life bar
+   from Jack's original mockups.
+4. The big button: one context-aware button (PASS/ATTACK/BLOCK/END TURN,
+   as mocked) vs separate buttons.
+
+## Decisions log
+
+- 2026-07-14 — Round 1 flat-panel design rejected (blocky). Direction locked:
+  Forge layout + Hearthstone-smooth physicality, per Jack.
+- 2026-07-14 — Phase ladder replaced by turn medallion + pips on the river;
+  log rail replaced by expandable scroll medallion.
