@@ -124,7 +124,7 @@ re-couple UI to engine internals, breaking the JSON-client architecture).
 | S1 | Match screen | Forge match UI | 🔵 baseline v0 done, region rounds next |
 | S2 | Home / play setup (mode, decks, start) | Forge home | ⬜ awaiting screenshot |
 | S3 | Deck editor + collection browser | Forge deck editor | ⬜ awaiting screenshot |
-| S4 | Deck import (paste / URL) | ours (no Forge equivalent this shape) | ⬜ design fresh, small |
+| S4 | Deck import (paste / URL) | ours (no Forge equivalent this shape) | 🔵 base v0 done (drawn in Forge's visual language; mirrors Phase 4 CLI: paste box, URL field, fidelity report, save) |
 | S5 | Settings | Forge preferences | ⬜ awaiting screenshot |
 | S6 | Draft / sealed flow | Forge limited UI | ⬜ later (with limited modes) |
 | S7 | Multiplayer lobby | Forge net lobby | ⬜ Phase 7 |
