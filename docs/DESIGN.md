@@ -111,6 +111,28 @@ part-by-part rebuild:
 Process: one region per round, Jack approves before the next; approved
 values (colors/sizes/spacing) get recorded here per region.
 
+## Screen inventory (whole-program plan)
+
+Every screen gets the same loop: Jack screenshots Forge's version → faithful
+baseline reconstruction in the design lab → facelift one region per round →
+approved spec recorded here → implemented in Compose (Phase 6). We copy
+Forge's *design*, never its Swing code (incompatible toolkit, and it would
+re-couple UI to engine internals, breaking the JSON-client architecture).
+
+| # | Screen | Source | Status |
+|---|---|---|---|
+| S1 | Match screen | Forge match UI | 🔵 baseline v0 done, region rounds next |
+| S2 | Home / play setup (mode, decks, start) | Forge home | ⬜ awaiting screenshot |
+| S3 | Deck editor + collection browser | Forge deck editor | ⬜ awaiting screenshot |
+| S4 | Deck import (paste / URL) | ours (no Forge equivalent this shape) | ⬜ design fresh, small |
+| S5 | Settings | Forge preferences | ⬜ awaiting screenshot |
+| S6 | Draft / sealed flow | Forge limited UI | ⬜ later (with limited modes) |
+| S7 | Multiplayer lobby | Forge net lobby | ⬜ Phase 7 |
+| S8 | Achievements | Forge achievements | ⬜ OPTIONAL — Jack to decide if it ships |
+
+Cut with their modes (never designed): Quest, Adventure, Planar Conquest
+screens.
+
 ## Decisions log
 
 - 2026-07-14 — Round 1 flat-panel design rejected (blocky).
