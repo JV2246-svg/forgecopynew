@@ -92,7 +92,10 @@ one token swap, decided below. Round 1's three-theme system is retired.
 
 ## Decisions log
 
-- 2026-07-14 — Round 1 flat-panel design rejected (blocky). Direction locked:
-  Forge layout + Hearthstone-smooth physicality, per Jack.
-- 2026-07-14 — Phase ladder replaced by turn medallion + pips on the river;
-  log rail replaced by expandable scroll medallion.
+- 2026-07-14 — Round 1 flat-panel design rejected (blocky).
+- 2026-07-14 — Round 2 (Hearthstone-style table/medallions) ALSO rejected.
+  **Both invented looks erased. New method locked by Jack: copy Forge's real
+  match UI from screenshots as baseline v0, then rebuild it one region at a
+  time, each change approved before the next.** Everything above this log
+  describing round-2 visuals is superseded and kept only as history; the
+  invariant rules (63:88 uncropped cards, fixed semantic colors) still hold.
