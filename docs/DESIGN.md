@@ -21,6 +21,14 @@ the Compose client implements.*
 
 ## Invariant rules
 
+- **Every card render, everywhere, is the real card image from the Scryfall
+  mirror** (Jack's rule, 2026-07-14) — hand, battlefield, Card Picture/Detail,
+  deck editor catalog and piles, import previews, precon picker. Exactly like
+  Forge. Resolution: engine PaperCard (name + set + collector number) → local
+  Scryfall DB printing → CardImageCache (Phase 3, on-demand fetch + permanent
+  disk cache). The design lab's gradient placeholders are mock-only; in the
+  client a placeholder frame appears solely while an image is still
+  downloading, then swaps to the scan.
 - Card aspect ratio is exactly 63:88. Card images from Scryfall are rendered
   complete and uncropped, artist/copyright line visible (API terms).
 - Life colors: player warm (red family), opponent cool (blue family).
