@@ -74,10 +74,9 @@ screens.
 - **KEEP (official WotC):** Constructed formats — Standard, Pioneer, Modern,
   Legacy, Vintage, Pauper · Commander · Brawl · Oathbreaker (WotC-official
   since 2023) · Draft · Sealed · Planechase · Archenemy · Vanguard.
-- **CUT (Forge-made / community):** MoJhoSto · Quest / Adventure / Conquest /
+- **CUT (Forge-made / community / novelty):** MoJhoSto · Momir Basic ·
+  Tiny Leaders (Jack's ruling 2026-07-14) · Quest / Adventure / Conquest /
   Puzzle / Gauntlets (already cut with their resources).
-- **BORDERLINE, awaiting Jack:** Momir Basic (real MTGO format but a novelty
-  Vanguard variant) · Tiny Leaders (community-made, never WotC).
 - Applied at facelift time: S2's variants row and mode sidebar drop the cut
   entries. Engine support for cut modes remains in the fork (harmless);
   Cardinal's UI simply never offers them.
