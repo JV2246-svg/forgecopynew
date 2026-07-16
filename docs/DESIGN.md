@@ -81,6 +81,18 @@ screens.
   entries. Engine support for cut modes remains in the fork (harmless);
   Cardinal's UI simply never offers them.
 
+## Facelift rounds (S1 match screen)
+
+- **Round 1 · Region 7 (battlefield): CANDIDATE PRESENTED, awaiting Jack.**
+  Structure identical to Forge (rows on the field panel; lands grouped with
+  ×N stack badges, creatures in front). Changes proposed: soft vignette
+  surface with faint creature/land row separation; rounded card corners with
+  drop shadows; hover lifts the card and feeds Card Detail/Picture; attacker
+  red glow; +1/+1 counters as chips; smooth tap/untap animation.
+- **Region 10 (Card Picture): APPROVED behavior locked per Jack** — always
+  the full uncropped card image of the last hovered card, defaulting to the
+  last card played (Forge's exact behavior).
+
 ## Decisions log
 
 - 2026-07-14 — Round 1 (flat themable panels) rejected by Jack: blocky.
