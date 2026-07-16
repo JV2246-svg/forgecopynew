@@ -61,13 +61,26 @@ re-couple UI to engine internals, breaking the JSON-client architecture).
 | S2 | Home / play setup (mode, decks, start) | Forge home | 🔵 base v0 done from Jack's screenshot. Regions: H1 mode sidebar (cut modes drop in Cardinal), H2 variants, H3 player seats, H4 deck picker, H5 start bar. |
 | S3 | Deck editor + collection browser | Forge deck editor | 🔵 base v0 done from Jack's 6 screenshots (editing state mocked; decks-list / commander / statistics / draw-order states inventoried). Regions: D1 filters+search, D2 catalog table, D3 current-deck panel, D4 format sub-tabs, D5/D6 shared right rail. |
 | S4 | Deck import (paste / URL) | ours (no Forge equivalent this shape) | 🔵 base v0 done (drawn in Forge's visual language; mirrors Phase 4 CLI: paste box, URL field, fidelity report, save) |
-| S5 | Settings | Forge preferences | ⬜ awaiting screenshot |
+| S5 | Settings | designed fresh (Forge's Preferences mostly configures cut systems) | 🔵 base v0 done. Six categories, every entry mapped to a built system: **Gameplay** (default format, legality enforcement on/off, games/match, AI personality, default phase stops, auto-pass priority, auto-order own triggers, concede confirm) · **Decks & Data** (card DB status + update-now, daily auto-update, engine rules version read-only, image cache size/clear, image quality, pre-download deck images, data folder) · **Appearance** (UI scale, fullscreen, animations/reduced-motion, board skin from facelift, card text overlay) · **Audio** (SFX toggle+volume; no music) · **Multiplayer** (Phase 7: name, avatar, port 17171, Tailscale note) · **Advanced** (protocol debug log, open logs, reset). |
 | S6 | Draft / sealed flow | Forge limited UI | ⬜ later (with limited modes) |
 | S7 | Multiplayer lobby | Forge net lobby | ⬜ Phase 7 |
 | S8 | Achievements | Forge achievements | ⬜ OPTIONAL — Jack to decide if it ships |
 
 Cut with their modes (never designed): Quest, Adventure, Planar Conquest
 screens.
+
+## Game modes: official MTG only (Jack's ruling, 2026-07-14)
+
+- **KEEP (official WotC):** Constructed formats — Standard, Pioneer, Modern,
+  Legacy, Vintage, Pauper · Commander · Brawl · Oathbreaker (WotC-official
+  since 2023) · Draft · Sealed · Planechase · Archenemy · Vanguard.
+- **CUT (Forge-made / community):** MoJhoSto · Quest / Adventure / Conquest /
+  Puzzle / Gauntlets (already cut with their resources).
+- **BORDERLINE, awaiting Jack:** Momir Basic (real MTGO format but a novelty
+  Vanguard variant) · Tiny Leaders (community-made, never WotC).
+- Applied at facelift time: S2's variants row and mode sidebar drop the cut
+  entries. Engine support for cut modes remains in the fork (harmless);
+  Cardinal's UI simply never offers them.
 
 ## Decisions log
 
