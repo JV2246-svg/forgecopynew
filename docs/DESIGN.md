@@ -91,12 +91,19 @@ screens.
 
 ## Facelift rounds (S1 match screen)
 
-- **Round 1 · Region 7 (battlefield): CANDIDATE PRESENTED, awaiting Jack.**
+- **Round 1 · Region 7 (battlefield): ✅ APPROVED by Jack 2026-07-14.**
   Structure identical to Forge (rows on the field panel; lands grouped with
-  ×N stack badges, creatures in front). Changes proposed: soft vignette
-  surface with faint creature/land row separation; rounded card corners with
-  drop shadows; hover lifts the card and feeds Card Detail/Picture; attacker
-  red glow; +1/+1 counters as chips; smooth tap/untap animation.
+  ×N stack badges, creatures in front). Locked values:
+  - Surface: radial vignette `#31414d → #263440 → #1d2934` (120%/140% at 50% 0%);
+    faint creature/land row separator hairline `rgba(140,170,190,0.25)`.
+  - Cards: corner radius ≈6.5% of card width; shadow `0 0.4em 1em rgba(0,0,0,0.5)`
+    + subtle top inset highlight; real Scryfall scans per the invariant.
+  - Hover: lift `translateY(-4%) scale(1.05)`, ~130 ms ease, soft cyan halo;
+    hover feeds Card Detail (9) and Card Picture (10).
+  - States: attacker halo `rgba(255,92,60,0.75)`; +1/+1 counters as green
+    chips (`#24452b` fill, `#9fe8b0` edge); stacked basics keep ×N badge.
+  - Tap/untap: 90-degree rotation, animated smoothly (no snap); honors
+    reduced-motion.
 - **Region 10 (Card Picture): APPROVED behavior locked per Jack** — always
   the full uncropped card image of the last hovered card, defaulting to the
   last card played (Forge's exact behavior).
